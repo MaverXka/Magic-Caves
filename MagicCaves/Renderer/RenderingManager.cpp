@@ -138,7 +138,7 @@ void RenderingManager::RenderThread_RenderDebugIMGUI()
 
 	ImGui::Render();
 
-	float color[4] = { 1,0,0,1 };
+	float color[4] = { 0,0,0,1 };
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(M_RenderTargetViewHeap->GetCPUDescriptorHandleForHeapStart());
 	rtvHandle.ptr += M_FrameIDX * RTVDescriptorSize;
 	MD_ImGUICommandList->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
