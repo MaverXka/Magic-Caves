@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Chunk.h"
-
 const int CHUNK_WIDTH = 16;
 const int CHUNK_HEIGHT = 256;
 
@@ -64,11 +62,17 @@ public:
 
 private:
 
-	Chunk* IteratedChunk = nullptr;
+	class Chunk* IteratedChunk = nullptr;
 	int IteratedIndex = 0;
 
 	int X = 0;
 	int Y = 0;
 	int Z = 0;
 
+};
+
+struct ChunkVertex
+{
+	float X, Y, Z;
+	float U, V;
 };

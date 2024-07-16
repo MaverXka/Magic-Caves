@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\maver\Рабочий стол\MagicCaves\MagicCaves\Debug;C:\Users\maver\Рабочий стол\MagicCaves\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include\;$(SolutionDir)MagicCaves\Debug\;$(SolutionDir)Include\cd3dx12\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,6 +129,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Misc\Config\Config.cpp" />
+    <ClCompile Include="Renderer\Base\RenderPass.cpp" />
+    <ClCompile Include="Renderer\RenderPasses\RenderPass_IMGUI.cpp" />
+    <ClCompile Include="World\Chunks\ChunkRendering.cpp" />
     <ClCompile Include="Renderer\View\Camera.cpp" />
     <ClCompile Include="Debug\ImGUI\imgui.cpp" />
     <ClCompile Include="Debug\ImGUI\imgui_demo.cpp" />
@@ -143,6 +147,11 @@
     <ClCompile Include="Launcher\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Misc\Config\Config.h" />
+    <ClInclude Include="Misc\Platform\PlatformBinaryReader.h" />
+    <ClInclude Include="Renderer\Base\RenderPass.h" />
+    <ClInclude Include="Renderer\RenderPasses\RenderPass_IMGUI.h" />
+    <ClInclude Include="World\Chunks\ChunkRendering.h" />
     <ClInclude Include="Renderer\View\Camera.h" />
     <ClInclude Include="Debug\ImGUI\imconfig.h" />
     <ClInclude Include="Debug\ImGUI\imgui.h" />

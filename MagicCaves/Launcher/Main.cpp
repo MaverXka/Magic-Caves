@@ -5,13 +5,18 @@
 #include <windows.h>
 #include <iostream>
 #include "../Renderer/RenderingManager.h"
+#include "../World/Chunks/ChunkRendering.h"
+#include "../Misc/Config/Config.h"
 #include "../World/Chunks/Chunk.h"
 
+Config* MagicCavesConfig = nullptr;
+
 RenderingManager* renderer = nullptr;
+ChunkRendering* chunkrenderer = nullptr;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+void EnableSTDConsoleOutput()
 {
     AllocConsole();
 
@@ -19,10 +24,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     freopen_s(&fDummy, "CONIN$", "r", stdin);
     freopen_s(&fDummy, "CONOUT$", "w", stderr);
     freopen_s(&fDummy, "CONOUT$", "w", stdout);
+}
 
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+{
+#ifdef _DEBUG
+    EnableSTDConsoleOutput();
+#endif
 
-    // Register the window class.
-    const wchar_t CLASS_NAME[] = L"Magic Caves";
+    MagicCavesConfig = new Config("settings.ini");
+
+    const wchar_t CLASS_NAME[] = L"Magic Caves Window";
 
     WNDCLASS wc = { };
 
@@ -34,31 +46,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindowEx(
-        0,                              // Optional window styles.
-        CLASS_NAME,                     // Window class
-        L"Magic Caves",    // Window text
-        WS_OVERLAPPEDWINDOW,            // Window style
-
-        // Size and position
-        CW_USEDEFAULT, CW_USEDEFAULT, 1920,1080,
-
+        0, 
+        CLASS_NAME,
+        L"Magic Caves",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, MagicCavesConfig->windowSizeX,MagicCavesConfig->windowSizeY,
         NULL,       // Parent window    
         NULL,       // Menu
         hInstance,  // Instance handle
         NULL        // Additional application data
     );
+    if (hwnd == NULL) {return 0;}
 
-    if (hwnd == NULL)
-    {
-        return 0;
-    }
-
-    renderer = new RenderingManager(hwnd);
+    renderer = new RenderingManager(hwnd, MagicCavesConfig);
+    chunkrenderer = new ChunkRendering(renderer);
 
     Chunk* ch = new Chunk();
 
     ShowWindow(hwnd, nCmdShow);
-
 
     MSG msg = { };
     while (GetMessage(&msg, NULL, 0, 0) > 0)
