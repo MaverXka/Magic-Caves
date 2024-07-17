@@ -105,7 +105,9 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Include\;$(SolutionDir)MagicCaves\Debug\;$(SolutionDir)Include\cd3dx12\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include\;$(SolutionDir)MagicCaves\Debug\;$(SolutionDir)Include\cd3dx12\;$(SolutionDir)MagicCaves\Engine\;$(SolutionDir)MagicCaves\Engine\PrecompiledHeader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,11 +131,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Misc\Config\Config.cpp" />
-    <ClCompile Include="Renderer\Base\RenderPass.cpp" />
-    <ClCompile Include="Renderer\RenderPasses\RenderPass_IMGUI.cpp" />
-    <ClCompile Include="World\Chunks\ChunkRendering.cpp" />
-    <ClCompile Include="Renderer\View\Camera.cpp" />
+    <ClCompile Include="Engine\Renderer\Base\RenderPass.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderPasses\RenderPass_IMGUI.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderPasses\RenderPass_Chunks.cpp" />
+    <ClCompile Include="Engine\World\World.cpp" />
+    <ClCompile Include="Engine\World\Chunks\WorldChunkManager.cpp" />
+    <ClCompile Include="Engine\World\Chunks\ChunkRendering.cpp" />
+    <ClCompile Include="Engine\Renderer\View\Camera.cpp" />
     <ClCompile Include="Debug\ImGUI\imgui.cpp" />
     <ClCompile Include="Debug\ImGUI\imgui_demo.cpp" />
     <ClCompile Include="Debug\ImGUI\imgui_draw.cpp" />
@@ -142,17 +148,21 @@
     <ClCompile Include="Debug\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="Debug\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Debug\Logging\Logger.cpp" />
-    <ClCompile Include="Renderer\RenderingManager.cpp" />
-    <ClCompile Include="World\Chunks\Chunk.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderingManager.cpp" />
+    <ClCompile Include="Engine\World\Chunks\Chunk.cpp" />
     <ClCompile Include="Launcher\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Engine.h" />
     <ClInclude Include="Misc\Config\Config.h" />
     <ClInclude Include="Misc\Platform\PlatformBinaryReader.h" />
-    <ClInclude Include="Renderer\Base\RenderPass.h" />
-    <ClInclude Include="Renderer\RenderPasses\RenderPass_IMGUI.h" />
-    <ClInclude Include="World\Chunks\ChunkRendering.h" />
-    <ClInclude Include="Renderer\View\Camera.h" />
+    <ClInclude Include="Engine\Renderer\Base\RenderPass.h" />
+    <ClInclude Include="Engine\Renderer\RenderPasses\RenderPass_IMGUI.h" />
+    <ClInclude Include="Engine\Renderer\RenderPasses\RenderPass_Chunks.h" />
+    <ClInclude Include="Engine\World\World.h" />
+    <ClInclude Include="Engine\World\Chunks\WorldChunkManager.h" />
+    <ClInclude Include="Engine\World\Chunks\ChunkRendering.h" />
+    <ClInclude Include="Engine\Renderer\View\Camera.h" />
     <ClInclude Include="Debug\ImGUI\imconfig.h" />
     <ClInclude Include="Debug\ImGUI\imgui.h" />
     <ClInclude Include="Debug\ImGUI\imgui_impl_dx12.h" />
@@ -162,9 +172,10 @@
     <ClInclude Include="Debug\ImGUI\imstb_textedit.h" />
     <ClInclude Include="Debug\ImGUI\imstb_truetype.h" />
     <ClInclude Include="Debug\Logging\Logger.h" />
-    <ClInclude Include="Renderer\RenderingManager.h" />
-    <ClInclude Include="World\Chunks\Chunk.h" />
-    <ClInclude Include="World\Chunks\ChunkData.h" />
+    <ClInclude Include="Engine\Renderer\RenderingManager.h" />
+    <ClInclude Include="Engine\World\Chunks\Chunk.h" />
+    <ClInclude Include="Engine\World\Chunks\ChunkData.h" />
+    <ClInclude Include="Engine\PrecompiledHeader\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shaders\ChunkPixelShader.hlsl">

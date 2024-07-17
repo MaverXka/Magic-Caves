@@ -8,6 +8,8 @@ public:
 
 	RenderPass_IMGUI();
 
+	virtual void RenderThread_Prepare() override;
+
 
 };
 

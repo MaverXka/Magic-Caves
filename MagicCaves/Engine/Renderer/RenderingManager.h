@@ -13,7 +13,7 @@
 #include <d3d12sdklayers.h>
 
 #include "Logging/Logger.h"
-#include <wrl.h>
+#include <wrl/client.h>
 
 #include "../World/Chunks/ChunkRendering.h"
 
@@ -27,6 +27,26 @@ class Config;
 
 #define RENDERLOG "Renderer"
 
+struct RenderProgram
+{
+protected:
+	RenderProgram()
+	{
+
+	}
+
+	static RenderProgram* Singleton;
+
+public:
+
+	RenderProgram(RenderProgram& other) = delete;
+	void operator=(const RenderProgram&) = delete;
+	static RenderProgram* Get();
+
+	ComPtr<ID3D12Device10> M_Device;
+
+};
+
 class RenderingManager
 {
 public:
@@ -39,6 +59,8 @@ public:
 	ComPtr<ID3D12Device10> GetRenderingDevice() { return M_Device; };
 
 	void RegisterRenderPass(RenderPass renderPass);
+
+	ChunkRendering* ChunkRenderer;
 
 	std::thread RenderThread;
 
@@ -69,8 +91,6 @@ private:
 	HANDLE M_FenceEvent;
 	ComPtr<ID3D12Fence> M_Fence;
 	unsigned int M_FenceValue;
-
-	ChunkRendering* ChunkRenderer;
 
 	std::vector<RenderPass> RegisteredRenderPasses;
 

@@ -1,4 +1,6 @@
 #pragma once
+
+#include "pch.h"
 #include "ChunkData.h"
 
 class Chunk
@@ -13,10 +15,7 @@ public:
 
 	void GenerateMesh();
 
-	/// <summary>
-	/// Called when need to be render (Render Thread)
-	/// </summary>
-	void RenderThread_Render();
+	void RenderThread_BuildCMDList();
 
 	/// <summary>
 	/// Functions converts X, Y, Z coordinates to single index.
@@ -28,6 +27,16 @@ public:
 	inline int GetBlockIndexAt(int X, int Y, int Z);
 
 protected:
+
+	ChunkVertex triangleVertices[3] = {
+		ChunkVertex(0.0f, 1.0f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f),  // Вершина 1
+		ChunkVertex(-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f), // Вершина 2
+		ChunkVertex(1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)   // Вершина 3
+	};
+
+	ComPtr<ID3D12Resource> M_ChunkVertexBuffer;
+	ComPtr<ID3D12Resource> M_ChunkIndexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW ChunkVertexBufferView;
 
 	friend class ChunkIterator;
 

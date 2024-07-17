@@ -4,6 +4,6 @@ RenderPass::RenderPass()
 {
 }
 
-void RenderPass::RenderThread_Activate()
+void RenderPass::RenderThread_Prepare()
 {
 }

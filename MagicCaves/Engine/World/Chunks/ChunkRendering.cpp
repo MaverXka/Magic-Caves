@@ -1,5 +1,5 @@
 #include "ChunkRendering.h"
-#include "../Renderer/RenderingManager.h"
+#include "Renderer/RenderingManager.h"
 #include "../Misc/Platform/PlatformBinaryReader.h"
 
 

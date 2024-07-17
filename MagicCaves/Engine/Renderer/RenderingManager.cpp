@@ -1,10 +1,10 @@
 #include "RenderingManager.h"
-#include "ImGUI/imgui.h"
-#include "ImGUI/imgui_impl_dx12.h"
-#include "ImGUI/imgui_impl_win32.h"
 
 #include "Base/RenderPass.h"
 #include "RenderPasses/RenderPass_IMGUI.h"
+#include "RenderPasses/RenderPass_Chunks.h"
+
+
 
 #include "../Misc/Config/Config.h"
 
@@ -79,6 +79,9 @@ RenderingManager::RenderingManager(HWND hwnd,Config* config) : window(hwnd), Gam
 		}
 	}
 
+	RenderProgram::Get()->M_Device = M_Device;
+
+	RegisterRenderPass(RenderPass_Chunks(ChunkRenderer));
 	RegisterRenderPass(RenderPass_IMGUI());
 
 	RenderThread = std::thread(&RenderingManager::RenderThread_Render, this);
@@ -106,7 +109,9 @@ void RenderingManager::RenderThread_Render()
 
 		for (int i = 0; i < RegisteredRenderPasses.size(); i++)
 		{
-			Commands.push_back(RegisteredRenderPasses[i].GetExecutableCommandList().Get());
+			auto cmdlist = RegisteredRenderPasses[i].GetExecutableCommandList().Get();
+			if (cmdlist == nullptr) continue;
+			Commands.push_back(cmdlist);
 		}
 
 		//M_CommandQueue->ExecuteCommandLists(Commands.size(), (ID3D12CommandList*const*)Commands.data());
@@ -152,3 +157,13 @@ RenderingManager::~RenderingManager()
 	M_Fence.Reset();
 }
 
+RenderProgram* RenderProgram::Singleton = nullptr;
+
+RenderProgram* RenderProgram::Get()
+{
+	if (Singleton == nullptr)
+	{
+		Singleton = new RenderProgram();
+	}
+	return Singleton;
+}

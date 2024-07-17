@@ -75,4 +75,5 @@ struct ChunkVertex
 {
 	float X, Y, Z;
 	float U, V;
+	float R, G, B;
 };

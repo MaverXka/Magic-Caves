@@ -1,10 +1,6 @@
 #pragma once
 
-#include <wrl.h>
-#include <d3d12.h>
-#include <cd3dx12/d3dx12.h>
-
-using namespace Microsoft::WRL;
+#include "pch.h"
 
 #define CHUNKRENDERLOG "Chunk Renderer"
 
