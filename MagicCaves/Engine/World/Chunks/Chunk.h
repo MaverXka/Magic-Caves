@@ -8,6 +8,7 @@ class Chunk
 public:
 
 	Chunk();
+	~Chunk();
 
 
 	/// <returns>Returns true if chunk blocks array are allocated in memory</returns>
@@ -38,6 +39,7 @@ protected:
 	ComPtr<ID3D12Resource> M_ChunkIndexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW ChunkVertexBufferView;
 
+	friend class RenderPass_Chunks;
 	friend class ChunkIterator;
 
 	BlockID* ChunkBlocks;

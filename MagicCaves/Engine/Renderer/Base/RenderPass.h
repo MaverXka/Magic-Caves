@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "Renderer/RenderProgram.h"
+
 #define RENDERPASSLOG "Render Pass"
 
 
@@ -26,10 +28,14 @@ public:
 
 	virtual RenderPassType GetRenderPassType() { return RenderPassType::Dynamic; };
 
+	ComPtr<ID3D12CommandAllocator> GetExecutableCommandAllocator() { return RenderPassCommandAllocator; }
 	ComPtr<ID3D12GraphicsCommandList> GetExecutableCommandList() { return RenderPassCommandList; };
 
 protected:
 
+	HRESULT hr;
+
+	ComPtr<ID3D12CommandAllocator> RenderPassCommandAllocator;
 	ComPtr<ID3D12GraphicsCommandList> RenderPassCommandList;
 
 

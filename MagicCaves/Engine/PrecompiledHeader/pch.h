@@ -5,5 +5,6 @@
 #include <vector>
 #include <wrl/client.h>
 #include "Logging/Logger.h"
+#include "Engine.h"
 
 using namespace Microsoft::WRL;

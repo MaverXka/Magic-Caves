@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\World\ChunkyWorld\ChunkyWorld.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Misc\Config\Config.cpp" />
     <ClCompile Include="Engine\Renderer\Base\RenderPass.cpp" />
@@ -151,8 +152,11 @@
     <ClCompile Include="Engine\Renderer\RenderingManager.cpp" />
     <ClCompile Include="Engine\World\Chunks\Chunk.cpp" />
     <ClCompile Include="Launcher\Main.cpp" />
+    <ClCompile Include="Engine\World\Overworld\Overworld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Renderer\RenderProgram.h" />
+    <ClInclude Include="Engine\World\ChunkyWorld\ChunkyWorld.h" />
     <ClInclude Include="Engine\Engine.h" />
     <ClInclude Include="Misc\Config\Config.h" />
     <ClInclude Include="Misc\Platform\PlatformBinaryReader.h" />
@@ -176,6 +180,7 @@
     <ClInclude Include="Engine\World\Chunks\Chunk.h" />
     <ClInclude Include="Engine\World\Chunks\ChunkData.h" />
     <ClInclude Include="Engine\PrecompiledHeader\pch.h" />
+    <ClInclude Include="Engine\World\Overworld\Overworld.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shaders\ChunkPixelShader.hlsl">

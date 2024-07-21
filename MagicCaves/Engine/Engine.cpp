@@ -3,6 +3,8 @@
 #include "Renderer/RenderingManager.h"
 #include "../Misc/Config/Config.h"
 #include "ImGUI/imgui_impl_win32.h"
+#include "World/World.h"
+#include "World/Overworld/Overworld.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -12,16 +14,27 @@ void WinAPIPaintWindow(HWND hwnd);
 
 const wchar_t WINDOW_CLASS_NAME[] = L"Magic Caves Window";
 
+Engine* Engine::MainEngineInstance = nullptr;
 
 Engine::Engine(HINSTANCE hInstance, int nCmdShow) : HInstance(hInstance)
 {
+    LOG(ENGINELOG, "Engine initialization begin");
+    if (!MainEngineInstance)
+    {
+        MainEngineInstance = this;
+    }
     EngineConfig = new Config("settings.ini");
 
     CreateMainWindowClass();
-
     ShowWindow(EngineWindow, nCmdShow);
 
-    EngineRenderer = new RenderingManager(EngineWindow, EngineConfig);
+    EngineRenderer = new RenderingManager(EngineWindow, EngineConfig, this);
+
+    Overworld* World = new Overworld(this);
+    LoadWorld(World);
+    EngineWorld->BeginPlay();
+
+    EngineRenderer->ReadyRender = true;
 
     MSG msg = { };
     while (GetMessage(&msg, NULL, 0, 0) > 0)
@@ -78,6 +91,7 @@ void Engine::CreateMainWindowClass()
         NULL        // Additional application data
     );
     if (EngineWindow == NULL) { return; }
+
 }
 
 void WinAPIPaintWindow(HWND hwnd)
@@ -95,6 +109,7 @@ void EngineDestroy()
 
 Engine::~Engine()
 {
+    delete EngineWorld;
     if (EngineRenderer != nullptr)
     {
         if (EngineRenderer->RenderThread.joinable())
@@ -102,4 +117,17 @@ Engine::~Engine()
             EngineRenderer->RenderThread.join();
         }
     }
+}
+
+void Engine::LoadWorld(World* world)
+{
+    delete EngineWorld;
+    LOG(ENGINELOG, "Loaded world " << world);
+    EngineWorld = world;
+}
+
+void Engine::EngineUpdate()
+{
+    if (EngineWorld == nullptr) return;
+    EngineWorld->Tick(1);
 }

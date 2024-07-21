@@ -1,6 +1,7 @@
 #include "Chunk.h"
 #include <iostream>
 #include "Renderer/RenderingManager.h"
+#include "Renderer/RenderProgram.h"
 
 Chunk::Chunk()
 {
@@ -24,6 +25,12 @@ Chunk::Chunk()
 	ChunkVertexBufferView.StrideInBytes = sizeof(ChunkVertex);
 	ChunkVertexBufferView.SizeInBytes = sizeof(ChunkVertex) * ARRAYSIZE(triangleVertices);
 
+}
+
+Chunk::~Chunk()
+{
+	M_ChunkVertexBuffer.Reset();
+	M_ChunkIndexBuffer.Reset();
 }
 
 void Chunk::GenerateMesh()

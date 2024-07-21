@@ -11,8 +11,11 @@ class ChunkRendering
 public:
 
 	ChunkRendering(RenderingManager* renderer);
+	~ChunkRendering();
 
 private:
+
+	friend class RenderPass_Chunks;
 
 	void ReadChunkVertexShader();
 	void ReadChunkOpaqueShader();

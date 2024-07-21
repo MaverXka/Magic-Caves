@@ -24,47 +24,31 @@ using namespace Microsoft::WRL;
 
 class RenderPass;
 class Config;
+class Engine;
+struct RenderProgram;
 
 #define RENDERLOG "Renderer"
-
-struct RenderProgram
-{
-protected:
-	RenderProgram()
-	{
-
-	}
-
-	static RenderProgram* Singleton;
-
-public:
-
-	RenderProgram(RenderProgram& other) = delete;
-	void operator=(const RenderProgram&) = delete;
-	static RenderProgram* Get();
-
-	ComPtr<ID3D12Device10> M_Device;
-
-};
 
 class RenderingManager
 {
 public:
 
-	RenderingManager(HWND hwnd, Config* config);
+	RenderingManager(HWND hwnd, Config* config, Engine* engine);
 	~RenderingManager();
 
 
 	/// <returns>Rendering Device</returns>
 	ComPtr<ID3D12Device10> GetRenderingDevice() { return M_Device; };
 
-	void RegisterRenderPass(RenderPass renderPass);
+	void RegisterRenderPass(RenderPass* renderPass);
 
 	ChunkRendering* ChunkRenderer;
 
 	std::thread RenderThread;
 
 private:
+
+	friend class Engine;
 
 	void RenderThread_Render();
 
@@ -76,7 +60,7 @@ private:
 	const static unsigned int FrameCount = 2;
 	int RTVDescriptorSize = 0;
 
-	ComPtr<IDXGIFactory7> M_Factory;
+	ComPtr<IDXGIFactory2> M_Factory;
 	ComPtr<ID3D12Device10> M_Device;
 	ComPtr<ID3D12CommandQueue> M_CommandQueue;
 	ComPtr<IDXGISwapChain4> M_SwapChain;
@@ -91,12 +75,14 @@ private:
 	HANDLE M_FenceEvent;
 	ComPtr<ID3D12Fence> M_Fence;
 	unsigned int M_FenceValue;
+	bool ReadyRender = false;
 
-	std::vector<RenderPass> RegisteredRenderPasses;
+	std::vector<RenderPass*> RegisteredRenderPasses;
 
 
 	Config* GameConfig;
 	HRESULT hr;
 	HWND window;
+	Engine* EnginePtr;
 };
 

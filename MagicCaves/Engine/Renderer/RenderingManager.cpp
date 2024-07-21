@@ -3,13 +3,16 @@
 #include "Base/RenderPass.h"
 #include "RenderPasses/RenderPass_IMGUI.h"
 #include "RenderPasses/RenderPass_Chunks.h"
+#include "RenderProgram.h"
 
 
 
 #include "../Misc/Config/Config.h"
 
 
-RenderingManager::RenderingManager(HWND hwnd,Config* config) : window(hwnd), GameConfig(config)
+RenderProgram* RenderProgram::Singleton = nullptr;
+
+RenderingManager::RenderingManager(HWND hwnd,Config* config, Engine* engine) : window(hwnd), GameConfig(config), EnginePtr(engine)
 {
 
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS((ID3D12Debug**)&M_DebugController))))
@@ -18,11 +21,12 @@ RenderingManager::RenderingManager(HWND hwnd,Config* config) : window(hwnd), Gam
 		LOG(RENDERLOG, "Debug layer enabled");
 	}
 
-	IDXGIFactory1* Factory = nullptr;
-    hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG,__uuidof(IDXGIFactory1*), (void**)&Factory);
+	IDXGIFactory2* Factory = nullptr;
+    hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG,__uuidof(IDXGIFactory2*), (void**)&Factory);
 	LOGS(hr, RENDERLOG, "DXGI Factory created");
-	hr = Factory->QueryInterface(__uuidof(IDXGIFactory7), (void**)&M_Factory);
-	LOGS(hr, RENDERLOG, "DXGI Factory transformed to 7");
+	M_Factory = Factory;
+	//hr = Factory->QueryInterface(__uuidof(IDXGIFactory2), (void**)&M_Factory);
+	//LOGS(hr, RENDERLOG, "DXGI Factory transformed to 2");
 	
 	M_Factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
 
@@ -78,11 +82,12 @@ RenderingManager::RenderingManager(HWND hwnd,Config* config) : window(hwnd), Gam
 			rtvHandle.Offset(1,RTVDescriptorSize);
 		}
 	}
-
 	RenderProgram::Get()->M_Device = M_Device;
+	RenderProgram::Get()->RenderTargetViewHeap = M_RenderTargetViewHeap.Get();
+	RenderProgram::Get()->RTVDescriptorSize = RTVDescriptorSize;
 
-	RegisterRenderPass(RenderPass_Chunks(ChunkRenderer));
-	RegisterRenderPass(RenderPass_IMGUI());
+	ChunkRenderer = new ChunkRendering(this);
+	RegisterRenderPass(new RenderPass_Chunks(ChunkRenderer));
 
 	RenderThread = std::thread(&RenderingManager::RenderThread_Render, this);
 	LOG(RENDERLOG, "Render thread started");
@@ -101,20 +106,25 @@ void RenderingManager::RenderThread_Render()
 
 	WaitForPreviousFrame();
 
-
 	while (true)
 	{
+		if (!ReadyRender) continue;
 		std::vector<ID3D12GraphicsCommandList*> Commands;
 		M_FrameIDX = M_SwapChain->GetCurrentBackBufferIndex();
+		RenderProgram::Get()->MainRenderTarget = M_RenderTargets[M_FrameIDX].Get();
+		RenderProgram::Get()->FrameIndex = M_FrameIDX;
 
 		for (int i = 0; i < RegisteredRenderPasses.size(); i++)
 		{
-			auto cmdlist = RegisteredRenderPasses[i].GetExecutableCommandList().Get();
+			RegisteredRenderPasses[i]->RenderThread_Prepare();
+			auto cmdlist = RegisteredRenderPasses[i]->GetExecutableCommandList().Get();
 			if (cmdlist == nullptr) continue;
 			Commands.push_back(cmdlist);
 		}
 
-		//M_CommandQueue->ExecuteCommandLists(Commands.size(), (ID3D12CommandList*const*)Commands.data());
+		M_CommandQueue->ExecuteCommandLists(Commands.size(), (ID3D12CommandList*const*)Commands.data());
+		//LOG(RENDERLOG, Commands.size());
+		
 
 		hr = M_SwapChain->Present(0, 0);
 		LOGF(hr, RENDERLOG, "Present failed");
@@ -125,7 +135,7 @@ void RenderingManager::RenderThread_Render()
 
 }
 
-void RenderingManager::RegisterRenderPass(RenderPass renderPass)
+void RenderingManager::RegisterRenderPass(RenderPass* renderPass)
 {
 	RegisteredRenderPasses.push_back(renderPass);
 }
@@ -155,15 +165,4 @@ RenderingManager::~RenderingManager()
 	M_RenderTargets[1].Reset();
 	M_DebugController.Reset();
 	M_Fence.Reset();
-}
-
-RenderProgram* RenderProgram::Singleton = nullptr;
-
-RenderProgram* RenderProgram::Get()
-{
-	if (Singleton == nullptr)
-	{
-		Singleton = new RenderProgram();
-	}
-	return Singleton;
 }
