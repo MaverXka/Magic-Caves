@@ -16,7 +16,7 @@ constexpr int TotalChunkBlocksSize = BlockTypeIDSize * CHUNK_VOLUME_SIZE;
 /// <summary>
 /// Chunk iterator created for easy way to iterate for all blocks in it.
 /// </summary>
-class ChunkIterator
+class ChunkLocalVoxelIterator
 {
 
 public:
@@ -24,23 +24,23 @@ public:
 	/// <summary>
 	/// Default constructor, iterated from 0 to max chunk size. Function GetBlock will not work;
 	/// </summary>
-	ChunkIterator() {}
+	ChunkLocalVoxelIterator() {}
 
 	/// <summary>
 	/// Use this constructor if you want to link iterator with specified chunk. You can use for example GetBlock function.
 	/// </summary>
 	/// <param name="IterateChunk"></param>
-	ChunkIterator(class Chunk* IterateChunk) : IteratedChunk(IterateChunk)
+	ChunkLocalVoxelIterator(class Chunk* IterateChunk) : IteratedChunk(IterateChunk)
 	{
 
 	}
 
-	bool operator==(const ChunkIterator& other)
+	bool operator==(const ChunkLocalVoxelIterator& other)
 	{
 		return (X == other.X) && (Y == other.Y) && (Z == other.Z);
 	}
 
-	ChunkIterator& operator++()
+	ChunkLocalVoxelIterator& operator++()
 	{
 		IteratedIndex++;
 		return *this;
@@ -77,3 +77,14 @@ struct ChunkVertex
 	float U, V;
 	float R, G, B;
 };
+
+/// <summary>
+/// Chunk specified constant buffer 
+/// </summary>
+struct ChunkConstantBuffer
+{
+	XMFLOAT4X4 ProjectionViewMatrix;
+	float c;
+	float padding[47];
+};
+static_assert((sizeof(ChunkConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");

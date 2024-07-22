@@ -14,16 +14,17 @@ struct PixelShaderInput
 
 cbuffer ConstantBuffer : register(b0)
 {
-    float4x4 Projection;
-    float4x4 View;
-    float4x4 Model;
+    float4x4 ProjectionView;
+    float c;
+    float padding[47];
 }
 
 
 PixelShaderInput VSMain(VertexInput input)
 {
-    PixelShaderInput ps;
-    ps.Position = input.Position;
+    PixelShaderInput ps = (PixelShaderInput)0;
+    ps.Position = mul(input.Position,ProjectionView);
+    //ps.Position = input.Position;
     ps.Color = input.Color;
     
 	return ps;

@@ -37,10 +37,11 @@ protected:
 
 	ComPtr<ID3D12Resource> M_ChunkVertexBuffer;
 	ComPtr<ID3D12Resource> M_ChunkIndexBuffer;
+	ComPtr<ID3D12Resource2> M_ChunkConstantBuffer;
 	D3D12_VERTEX_BUFFER_VIEW ChunkVertexBufferView;
 
 	friend class RenderPass_Chunks;
-	friend class ChunkIterator;
+	friend class ChunkLocalVoxelIterator;
 
 	BlockID* ChunkBlocks;
 	bool bIsChunkBlocksAllocated = false;

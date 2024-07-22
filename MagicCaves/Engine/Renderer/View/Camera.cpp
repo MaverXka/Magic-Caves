@@ -1,11 +1,9 @@
 #include "Camera.h"
 
+Camera* Camera::MainCamera = nullptr;
+
 Camera::Camera()
 {
-	if (MainCamera == nullptr)
-	{
-		MainCamera = new Camera();
-	}
 }
 
 void Camera::RotateCamera(float _Pitch, float _Yaw, float _Roll)
@@ -20,10 +18,16 @@ XMFLOAT4X4 Camera::GetProjectionViewMatrix()
 	return ProjectionViewMatrix;
 }
 
+void Camera::SetMainCamera(Camera* CamPtr)
+{
+	MainCamera = CamPtr;
+}
+
 void Camera::UpdateProjectionViewMatrix()
 {
-	XMMATRIX ProjectionMatrix = XMMatrixPerspectiveFovRH(XMConvertToRadians(CameraFieldOfView), 1920.0f / 1080.0f, 0.01f, 1000);
-	XMMATRIX ViewMatrix = XMMatrixLookToRH(XMVectorSet(X, Y, Z, 0), XMVectorSet(0, 1, 0, 0), XMVectorSet(0, 0, 1, 0));
+	XMMATRIX ProjectionMatrix = XMMatrixPerspectiveFovRH(XMConvertToRadians(CameraFieldOfView), 1280.0f / 720.0f, 0.01f, 1000);
+	XMMATRIX ViewMatrix = XMMatrixLookToRH(XMVectorSet(X, Y, Z, 0), XMVectorSet(1, 0, 0, 0), XMVectorSet(0, 0, 1, 0));
 	XMMATRIX MatrixMultiplied = XMMatrixMultiply(ViewMatrix, ProjectionMatrix);
-	XMStoreFloat4x4(&ProjectionViewMatrix, MatrixMultiplied);
+	auto fin = XMMatrixTranspose(MatrixMultiplied);
+	XMStoreFloat4x4(&ProjectionViewMatrix, fin);
 }

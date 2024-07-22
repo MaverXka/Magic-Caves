@@ -34,7 +34,7 @@ public:
 	/// <summary>
 	/// Get's main camera.
 	/// </summary>
-	Camera* GetMainCamera() { return MainCamera; };
+	static Camera* GetMainCamera() { return MainCamera; };
 
 	/// <summary>
 	/// Projection View matrix is calculated only when any actions with camera are created.
@@ -42,19 +42,22 @@ public:
 	/// <returns>Multiplied Projection and View matrix</returns>
 	XMFLOAT4X4 GetProjectionViewMatrix();
 
+	static void SetMainCamera(Camera* CamPtr);
+
 protected:
+
+
+	friend class Enigne;
 
 	void UpdateProjectionViewMatrix();
 
 	static Camera* MainCamera;
 
-	float CameraFieldOfView;
+	float CameraFieldOfView = 90;
 	float X, Y, Z;
 	float Pitch, Yaw, Roll;
 
 	XMFLOAT4X4 ProjectionViewMatrix;
 
 };
-
-Camera* Camera::MainCamera = nullptr;
 

@@ -126,7 +126,7 @@ void RenderingManager::RenderThread_Render()
 		//LOG(RENDERLOG, Commands.size());
 		
 
-		hr = M_SwapChain->Present(0, 0);
+		hr = M_SwapChain->Present(1, 0);
 		LOGF(hr, RENDERLOG, "Present failed");
 
 		WaitForPreviousFrame();

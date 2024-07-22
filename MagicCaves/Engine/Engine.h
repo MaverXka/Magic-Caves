@@ -2,9 +2,12 @@
 
 #include "pch.h"
 
+#include "Renderer/View/Camera.h"
+
 class RenderingManager;
 class Config;
 class World;
+class Camera;
 
 #define ENGINELOG "Engine"
 
@@ -30,12 +33,9 @@ private:
 
 	HINSTANCE HInstance;
 	HWND EngineWindow;
-
 	Config* EngineConfig;
-
 	class World* EngineWorld;
-
-
+	Camera* EngineCamera;
 	RenderingManager* EngineRenderer;
 
 };

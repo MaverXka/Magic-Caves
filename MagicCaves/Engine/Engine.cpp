@@ -33,6 +33,8 @@ Engine::Engine(HINSTANCE hInstance, int nCmdShow) : HInstance(hInstance)
     Overworld* World = new Overworld(this);
     LoadWorld(World);
     EngineWorld->BeginPlay();
+    EngineCamera = new Camera();
+    Camera::SetMainCamera(EngineCamera);
 
     EngineRenderer->ReadyRender = true;
 

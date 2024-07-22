@@ -15,6 +15,8 @@ public:
 
 	virtual RenderPassType GetRenderPassType() override { return RenderPassType::Dynamic; };
 
+	UINT8* Data = nullptr;
+
 protected:
 
 	class ChunkRendering* ChunkRenderer = nullptr;
