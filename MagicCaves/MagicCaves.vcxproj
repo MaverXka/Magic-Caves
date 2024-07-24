@@ -113,6 +113,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>cd $(SolutionDir)Scripts\
+call "$(SolutionDir)Scripts\PackAssets.bat"  -Configuration=$(Configuration) -OutputDir="$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -131,8 +135,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Core\Core.cpp" />
     <ClCompile Include="Engine\World\ChunkyWorld\ChunkyWorld.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
+    <ClCompile Include="Engine\Input\InputSystem.cpp" />
     <ClCompile Include="Misc\Config\Config.cpp" />
     <ClCompile Include="Engine\Renderer\Base\RenderPass.cpp" />
     <ClCompile Include="Engine\Renderer\RenderPasses\RenderPass_IMGUI.cpp" />
@@ -155,9 +161,12 @@
     <ClCompile Include="Engine\World\Overworld\Overworld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Core\Core.h" />
+    <ClInclude Include="Engine\Input\InputKeyBinds.h" />
     <ClInclude Include="Engine\Renderer\RenderProgram.h" />
     <ClInclude Include="Engine\World\ChunkyWorld\ChunkyWorld.h" />
     <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Engine\Input\InputSystem.h" />
     <ClInclude Include="Misc\Config\Config.h" />
     <ClInclude Include="Misc\Platform\PlatformBinaryReader.h" />
     <ClInclude Include="Engine\Renderer\Base\RenderPass.h" />

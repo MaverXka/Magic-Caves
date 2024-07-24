@@ -18,12 +18,15 @@ public:
 	ChunkRendering(RenderingManager* renderer);
 	~ChunkRendering();
 
+	void test();
+
 private:
 
 	friend class RenderPass_Chunks;
 
 	void ReadChunkVertexShader();
 	void ReadChunkOpaqueShader();
+
 
 
 	//D3D12

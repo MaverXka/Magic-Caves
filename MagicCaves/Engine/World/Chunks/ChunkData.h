@@ -84,7 +84,7 @@ struct ChunkVertex
 struct ChunkConstantBuffer
 {
 	XMFLOAT4X4 ProjectionViewMatrix;
-	float c;
-	float padding[47];
+	int ChunkOffsetX, ChunkOffsetY;
+	char padding[184];
 };
 static_assert((sizeof(ChunkConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");

@@ -31,6 +31,7 @@ Chunk::~Chunk()
 {
 	M_ChunkVertexBuffer.Reset();
 	M_ChunkIndexBuffer.Reset();
+	M_ChunkConstantBuffer.Reset();
 }
 
 void Chunk::GenerateMesh()

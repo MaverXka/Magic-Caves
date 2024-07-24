@@ -42,6 +42,13 @@ public:
 
 	void RegisterRenderPass(RenderPass* renderPass);
 
+	void ResizeWindow();
+
+	void CreateSwapChainRenderTargets();
+
+	void SetCanRender(bool Render) { bCanRender = Render; };
+	bool CanRender() { return bCanRender; };
+
 	ChunkRendering* ChunkRenderer;
 
 	std::thread RenderThread;
@@ -56,6 +63,7 @@ private:
 	ComPtr<ID3D12Debug> M_DebugController;
 	//~End Debugging
 
+	bool bCanRender = false;
 
 	const static unsigned int FrameCount = 2;
 	int RTVDescriptorSize = 0;
@@ -75,7 +83,6 @@ private:
 	HANDLE M_FenceEvent;
 	ComPtr<ID3D12Fence> M_Fence;
 	unsigned int M_FenceValue;
-	bool ReadyRender = false;
 
 	std::vector<RenderPass*> RegisteredRenderPasses;
 

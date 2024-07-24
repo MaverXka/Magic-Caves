@@ -102,4 +102,7 @@ void ChunkRendering::ReadChunkOpaqueShader()
 
 ChunkRendering::~ChunkRendering()
 {
+	M_ChunkRootSignature.Reset();
+	M_CBDescriptorHeap.Reset();
+	M_ChunkPSO.Reset();
 }

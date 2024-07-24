@@ -1,12 +1,22 @@
 #include "RenderPass_Chunks.h"
 #include "Engine.h"
+#include "../World/Chunks/ChunkRendering.h"
 #include "../World/ChunkyWorld/ChunkyWorld.h"
 #include "../Renderer/View/Camera.h"
-#include "../World/Chunks/ChunkRendering.h"
+
+
 
 RenderPass_Chunks::RenderPass_Chunks(ChunkRendering* NewChunkRenderer) : ChunkRenderer(NewChunkRenderer)
 {
 	RenderPass::RenderPass();
+
+	CD3DX12_RANGE readRange(0, 0);
+	ChunkRenderer->M_ChunkConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&Data));
+}
+
+RenderPass_Chunks::~RenderPass_Chunks()
+{
+	ChunkRenderer->M_ChunkConstantBuffer->Unmap(0, nullptr);
 }
 
 void RenderPass_Chunks::RenderThread_Prepare()
@@ -21,35 +31,16 @@ void RenderPass_Chunks::RenderThread_Prepare()
 
 	RenderPassCommandList->Reset(RenderPassCommandAllocator.Get(), ChunkRenderer->M_ChunkPSO.Get());
 
-	Camera* renderViewCamera = Camera::GetMainCamera();
-	renderViewCamera->SetCameraPosition(-4, 0, 2);
-	auto ViewMatrix = renderViewCamera->GetProjectionViewMatrix();
-
-	ChunkConstantBuffer cb = {};
-	cb.ProjectionViewMatrix = ViewMatrix;
-	cb.c = 1;
-	//cb.ProjectionView = ViewMatrix;
-	//cb.X = 46;
-	//cb.Y = 43;
-	//cb.R = 130;
-	//cb.G = 120;
-
-	CD3DX12_RANGE readRange(0, 0);
-	ChunkRenderer->M_ChunkConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&Data));
-	memcpy(Data, &cb, sizeof(ChunkConstantBuffer));
-	ChunkRenderer->M_ChunkConstantBuffer->Unmap(0, nullptr);
-	//ChunkRenderer->M_ChunkConstantBuffer->Unmap(0, nullptr);
-
 	ID3D12DescriptorHeap* heaps[] = { ChunkRenderer->M_CBDescriptorHeap.Get() };
 	RenderPassCommandList->SetGraphicsRootSignature(ChunkRenderer->M_ChunkRootSignature.Get());
-	//RenderPassCommandList->SetDescriptorHeaps(ARRAYSIZE(heaps), heaps);
-	//RenderPassCommandList->SetGraphicsRootDescriptorTable(0, ChunkRenderer->M_CBDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
-	D3D12_VIEWPORT VP = D3D12_VIEWPORT(0, 0, 1280, 720);
-	D3D12_RECT RCT = D3D12_RECT(0, 0, 1280, 720);
+	int WinX = 0;
+	int WinY = 0;
+	Engine::GetEngine()->GetWindowSize(WinX, WinY);
+	D3D12_VIEWPORT VP = D3D12_VIEWPORT(0, 0, WinX, WinY);
+	D3D12_RECT RCT = D3D12_RECT(0, 0, WinX, WinY);
 	RenderPassCommandList->RSSetViewports(1,&VP);
 	RenderPassCommandList->RSSetScissorRects(1,&RCT);
-
 
 	auto td = CD3DX12_RESOURCE_BARRIER::Transition(RenderProgram::Get()->MainRenderTarget, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	RenderPassCommandList->ResourceBarrier(1, &td);
@@ -74,9 +65,11 @@ void RenderPass_Chunks::RenderThread_Prepare()
 	{
 		if (CWorld->WorldChunks[i] != nullptr)
 		{
+			UpdateConstantBuffer(0, 0);
+
 			RenderPassCommandList->SetGraphicsRootConstantBufferView(0, ChunkRenderer->M_ChunkConstantBuffer->GetGPUVirtualAddress());
 			RenderPassCommandList->IASetVertexBuffers(0, 1, &CWorld->WorldChunks[i]->ChunkVertexBufferView);
-			RenderPassCommandList->DrawInstanced(3, 1, 0, 0);
+			RenderPassCommandList->DrawInstanced(36, 1, 0, 0);
 		}
 	}
 
@@ -84,4 +77,12 @@ void RenderPass_Chunks::RenderThread_Prepare()
 	RenderPassCommandList->ResourceBarrier(1, &td2);
 
 	RenderPassCommandList->Close();
+}
+
+void RenderPass_Chunks::UpdateConstantBuffer(int OffsetX, int OffsetY)
+{
+	Camera* renderViewCamera = Camera::GetMainCamera();
+	auto ViewMatrix = renderViewCamera->GetProjectionViewMatrix();
+	constantBuffer.ProjectionViewMatrix = ViewMatrix;
+	memcpy(Data, &constantBuffer, sizeof(ChunkConstantBuffer));
 }

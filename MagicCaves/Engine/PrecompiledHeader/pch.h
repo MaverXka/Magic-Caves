@@ -6,5 +6,6 @@
 #include <wrl/client.h>
 #include "Logging/Logger.h"
 #include "Engine.h"
+#include "Core/Core.h"
 
 using namespace Microsoft::WRL;

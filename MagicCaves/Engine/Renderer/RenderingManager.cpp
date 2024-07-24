@@ -73,18 +73,13 @@ RenderingManager::RenderingManager(HWND hwnd,Config* config, Engine* engine) : w
 	}
 
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(M_RenderTargetViewHeap->GetCPUDescriptorHandleForHeapStart());
-		for (int n = 0; n < FrameCount; n++)
-		{
-			hr = M_SwapChain->GetBuffer(n, __uuidof(ID3D12Resource2), (void**)&M_RenderTargets[n]);
-			LOGS(hr, RENDERLOG, "Render Buffer found");
-			M_Device->CreateRenderTargetView(M_RenderTargets[n].Get(), nullptr, rtvHandle);
-			rtvHandle.Offset(1,RTVDescriptorSize);
-		}
+		CreateSwapChainRenderTargets();
 	}
 	RenderProgram::Get()->M_Device = M_Device;
 	RenderProgram::Get()->RenderTargetViewHeap = M_RenderTargetViewHeap.Get();
 	RenderProgram::Get()->RTVDescriptorSize = RTVDescriptorSize;
+
+	
 
 	ChunkRenderer = new ChunkRendering(this);
 	RegisterRenderPass(new RenderPass_Chunks(ChunkRenderer));
@@ -108,7 +103,7 @@ void RenderingManager::RenderThread_Render()
 
 	while (true)
 	{
-		if (!ReadyRender) continue;
+		if (!CanRender()) continue;
 		std::vector<ID3D12GraphicsCommandList*> Commands;
 		M_FrameIDX = M_SwapChain->GetCurrentBackBufferIndex();
 		RenderProgram::Get()->MainRenderTarget = M_RenderTargets[M_FrameIDX].Get();
@@ -140,6 +135,37 @@ void RenderingManager::RegisterRenderPass(RenderPass* renderPass)
 	RegisteredRenderPasses.push_back(renderPass);
 }
 
+void RenderingManager::ResizeWindow()
+{
+	if (M_SwapChain == nullptr) return;
+	WaitForPreviousFrame();
+	int X, Y;
+	Engine::GetEngine()->GetWindowSize(X, Y);
+
+	for (int n = 0; n < FrameCount; n++)
+	{
+		M_RenderTargets->Reset();
+		M_RenderTargets[n] = nullptr;
+	}
+
+	hr = M_SwapChain->ResizeBuffers(FrameCount, X, Y, DXGI_FORMAT_UNKNOWN, 0);
+	CreateSwapChainRenderTargets();
+	LOGF(hr,WINDOWLOG, "Swap chain resize failed");
+
+}
+
+void RenderingManager::CreateSwapChainRenderTargets()
+{
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(M_RenderTargetViewHeap->GetCPUDescriptorHandleForHeapStart());
+	for (int n = 0; n < FrameCount; n++)
+	{
+		hr = M_SwapChain->GetBuffer(n, __uuidof(ID3D12Resource2), (void**)&M_RenderTargets[n]);
+		//LOGS(hr, RENDERLOG, "Render Buffer found");
+		M_Device->CreateRenderTargetView(M_RenderTargets[n].Get(), nullptr, rtvHandle);
+		rtvHandle.Offset(1, RTVDescriptorSize);
+	}
+}
+
 void RenderingManager::WaitForPreviousFrame()
 {
 	const UINT64 fence = M_FenceValue;
@@ -156,6 +182,12 @@ void RenderingManager::WaitForPreviousFrame()
 //Знаю что в данном контексте не хорошо использывать shared ptr, а comptr потом изменю
 RenderingManager::~RenderingManager()
 {
+	WaitForPreviousFrame();
+	for (int n = 0; n < FrameCount; n++)
+	{
+		M_RenderTargets->Reset();
+		M_RenderTargets[n] = nullptr;
+	}
 	M_Factory.Reset();
 	M_Device.Reset();
 	M_CommandQueue.Reset();

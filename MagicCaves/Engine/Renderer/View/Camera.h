@@ -27,6 +27,12 @@ public:
 
 
 	/// <summary>
+	/// Offset's camera by params
+	/// </summary>
+	void OffsetCamera(float OffsetX, float OffsetY, float OffsetZ) { X += OffsetX; Y += OffsetY; Z += OffsetZ; UpdateProjectionViewMatrix(); };
+
+
+	/// <summary>
 	/// No implemented for now
 	/// </summary>
 	void RotateCamera(float _Pitch, float _Yaw, float _Roll);

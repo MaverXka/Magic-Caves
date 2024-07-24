@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Engine.h"
 
 Camera* Camera::MainCamera = nullptr;
 
@@ -25,8 +26,19 @@ void Camera::SetMainCamera(Camera* CamPtr)
 
 void Camera::UpdateProjectionViewMatrix()
 {
-	XMMATRIX ProjectionMatrix = XMMatrixPerspectiveFovRH(XMConvertToRadians(CameraFieldOfView), 1280.0f / 720.0f, 0.01f, 1000);
-	XMMATRIX ViewMatrix = XMMatrixLookToRH(XMVectorSet(X, Y, Z, 0), XMVectorSet(1, 0, 0, 0), XMVectorSet(0, 0, 1, 0));
+	int wx, wy;
+	Engine::GetEngine()->GetWindowSize(wx, wy);
+	if (wx == 0 || wy == 0)
+	{
+		wx = 1;
+		wy = 1;
+	}
+
+	XMMATRIX ProjectionMatrix = XMMatrixPerspectiveFovRH(XMConvertToRadians(CameraFieldOfView), (float)wx / (float)wy, 0.01f, 1000);
+
+	XMVECTOR upDir = XMVectorSet(0, 0, 1, 0);
+
+	XMMATRIX ViewMatrix = XMMatrixLookToRH(XMVectorSet(X, Y, Z, 0), XMVectorSet(1, 0, 0, 0), upDir);
 	XMMATRIX MatrixMultiplied = XMMatrixMultiply(ViewMatrix, ProjectionMatrix);
 	auto fin = XMMatrixTranspose(MatrixMultiplied);
 	XMStoreFloat4x4(&ProjectionViewMatrix, fin);

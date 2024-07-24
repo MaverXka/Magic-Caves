@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../Base/RenderPass.h"
+#include "../World/Chunks/ChunkData.h"
+
+struct ChunkConstantBuffer;
 
 class RenderPass_Chunks : public RenderPass
 {
@@ -9,6 +12,7 @@ class RenderPass_Chunks : public RenderPass
 public:
 
 	RenderPass_Chunks(class ChunkRendering* NewChunkRenderer);
+	~RenderPass_Chunks();
 
 
 	virtual void RenderThread_Prepare() override;
@@ -18,6 +22,10 @@ public:
 	UINT8* Data = nullptr;
 
 protected:
+
+	struct ChunkConstantBuffer constantBuffer;
+
+	void UpdateConstantBuffer(int OffsetX, int OffsetY);
 
 	class ChunkRendering* ChunkRenderer = nullptr;
 
